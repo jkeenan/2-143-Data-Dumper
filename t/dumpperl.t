@@ -30,11 +30,11 @@ $b = 'beta';
 
   $obj = Data::Dumper->new([$a,\%c], [qw(a *c)]);
   $dumpstr = _dumptostr($obj);
-  print STDERR "x: $dumpstr\n";
+#  print STDERR "x: $dumpstr\n";
 
   $obj = Data::Dumper->new([$a,undef], [qw(a *c)]);
   $dumpstr = _dumptostr($obj);
-  print STDERR "x: $dumpstr\n";
+#  print STDERR "x: $dumpstr\n";
 }
 
 pass($0);
