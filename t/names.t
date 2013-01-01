@@ -46,9 +46,7 @@ $objagain = $obj->Names(\@newnames);
 is($objagain, $obj, "Names returned same object");
 is_deeply($objagain->{names}, \@newnames,
     "Able to use Names() to set names to be dumped");
-open my $S, '>', \$dumpstr or croak "Unable to open for writing to string";
-print $S $obj->Dump;
-close $S or croak "Unable to close after writing to string";
+$dumpstr = _dumptostr($obj);
 like($dumpstr, qr/gamma/s, "Got first name expected");
 like($dumpstr, qr/delta/s, "Got first name expected");
 unlike($dumpstr, qr/epsilon/s, "Did not get name which was not expected");
@@ -59,10 +57,17 @@ $objagain = $obj->Names(\@newnames);
 is($objagain, $obj, "Names returned same object");
 is_deeply($objagain->{names}, \@newnames,
     "Able to use Names() to set names to be dumped");
-open my $T, '>', \$dumpstr or croak "Unable to open for writing to string";
-print $T $obj->Dump;
-close $T or croak "Unable to close after writing to string";
+$dumpstr = _dumptostr($obj);
 like($dumpstr, qr/gamma/s, "Got name expected");
 unlike($dumpstr, qr/delta/s, "Did not get name which was not expected");
 unlike($dumpstr, qr/epsilon/s, "Did not get name which was not expected");
 like($dumpstr, qr/\$VAR2/s, "Got default name");
+
+sub _dumptostr {
+    my ($obj) = @_;
+    my $dumpstr;
+    open my $T, '>', \$dumpstr or croak "Unable to open for writing to string";
+    print $T $obj->Dump;
+    close $T or croak "Unable to close after writing to string";
+    return $dumpstr;
+}
