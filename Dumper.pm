@@ -178,9 +178,14 @@ sub Seen {
 #
 sub Values {
   my($s, $v) = @_;
-  if (defined($v) && (ref($v) eq 'ARRAY'))  {
-    $s->{todump} = [@$v];        # make a copy
-    return $s;
+  if (defined($v)) {
+    if (ref($v) eq 'ARRAY')  {
+        $s->{todump} = [@$v];        # make a copy
+        return $s;
+    }
+    else {
+        croak "Argument to Values, if provided, must be array ref";
+    }
   }
   else {
     return @{$s->{todump}};
@@ -192,9 +197,14 @@ sub Values {
 #
 sub Names {
   my($s, $n) = @_;
-  if (defined($n) && (ref($n) eq 'ARRAY'))  {
-    $s->{names} = [@$n];         # make a copy
-    return $s;
+  if (defined($n)) {
+    if (ref($n) eq 'ARRAY') {
+      $s->{names} = [@$n];         # make a copy
+      return $s;
+    }
+    else {
+        croak "Argument to Names, if provided, must be array ref";
+    }
   }
   else {
     return @{$s->{names}};
@@ -881,15 +891,21 @@ itself.
 
 =item I<$OBJ>->Values(I<[ARRAYREF]>)
 
-Queries or replaces the internal array of values that will be dumped.
-When called without arguments, returns the values.  Otherwise, returns the
-object itself.
+Queries or replaces the internal array of values that will be dumped.  When
+called without arguments, returns the values as a list.  When called with a
+reference to an array of replacement values, returns the object itself.  When
+called with any other type of argument, dies.
 
 =item I<$OBJ>->Names(I<[ARRAYREF]>)
 
 Queries or replaces the internal array of user supplied names for the values
-that will be dumped.  When called without arguments, returns the names.
-Otherwise, returns the object itself.
+that will be dumped.  When called without arguments, returns the names.  When
+called with an array of replacement names, returns the object itself.  If the
+number of replacment names exceeds the number of values to be named, the
+excess names will not be used.  If the number of replacement names falls short
+of the number of values to be named, the list of replacment names will be
+exhausted and remaining values will not be renamed.  When
+called with any other type of argument, dies.
 
 =item I<$OBJ>->Reset
 
