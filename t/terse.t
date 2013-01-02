@@ -28,6 +28,9 @@ my $dumper;
 
 $dumper = Data::Dumper->new([$hash]);
 $dumpstr{noterse} = _dumptostr($dumper);
+# $VAR1 = {
+#           'foo' => 42
+#         };
 
 $dumper = Data::Dumper->new([$hash]);
 $dumper->Terse();
@@ -40,6 +43,9 @@ $dumpstr{terse_0} = _dumptostr($dumper);
 $dumper = Data::Dumper->new([$hash]);
 $dumper->Terse(1);
 $dumpstr{terse_1} = _dumptostr($dumper);
+# {
+#   'foo' => 42
+# }
 
 $dumper = Data::Dumper->new([$hash]);
 $dumper->Terse(undef);
