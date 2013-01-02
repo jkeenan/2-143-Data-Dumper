@@ -240,26 +240,21 @@ sub Dumpperl {
     $name = $s->{names}[$i++];
     if (defined $name) {
       if ($name =~ /^[*](.*)$/) {
-#print STDERR "b\n";
         if (defined $val) {
-#print STDERR "c\n";
             $name = (ref $val eq 'ARRAY') ? ( "\@" . $1 ) :
               (ref $val eq 'HASH')  ? ( "\%" . $1 ) :
               (ref $val eq 'CODE')  ? ( "\*" . $1 ) :
               ( "\$" . $1 ) ;
         }
         else {
-#          print STDERR "Hit the spot\n";
           $name = "\$" . $1;
         }
       }
       elsif ($name !~ /^\$/) {
-#print STDERR "d\n";
         $name = "\$" . $name;
       }
     }
-    else {
-#print STDERR "e\n";
+    else { # no names provided
       $name = "\$" . $s->{varname} . $i;
     }
 

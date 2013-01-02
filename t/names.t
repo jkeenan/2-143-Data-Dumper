@@ -16,6 +16,8 @@ use Carp;
 use Data::Dumper;
 $Data::Dumper::Indent=1;
 use Test::More qw(no_plan); # tests => 9;
+use lib qw( ./t/lib );
+use Testing qw( _dumptostr );
 
 my ($a, $b, $obj);
 my (@names);
@@ -63,11 +65,3 @@ unlike($dumpstr, qr/delta/s, "Did not get name which was not expected");
 unlike($dumpstr, qr/epsilon/s, "Did not get name which was not expected");
 like($dumpstr, qr/\$VAR2/s, "Got default name");
 
-sub _dumptostr {
-    my ($obj) = @_;
-    my $dumpstr;
-    open my $T, '>', \$dumpstr or croak "Unable to open for writing to string";
-    print $T $obj->Dump;
-    close $T or croak "Unable to close after writing to string";
-    return $dumpstr;
-}
