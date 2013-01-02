@@ -605,10 +605,6 @@ sub DumperX {
   return Data::Dumper->Dumpxs([@_], []);
 }
 
-sub Dumpf { return Data::Dumper->Dump(@_) }
-
-sub Dumpp { print Data::Dumper->Dump(@_) }
-
 #
 # reset the "seen" cache 
 #
