@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Test::More qw(no_plan); # tests => 2;
+use Test::More tests => 6;
 use lib qw( ./t/lib );
 use Testing qw( _dumptostr );
 
