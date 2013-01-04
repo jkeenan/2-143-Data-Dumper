@@ -38,8 +38,8 @@ my @exe_files = values %pod_scripts;
 
 WriteMakefile(
     NAME          => 'Data::Dumper',
-    VERSION_FROM  => 'Dumper.pm',
-    ABSTRACT_FROM => 'Dumper.pm',
+    VERSION_FROM  => 'lib/Data/Dumper.pm',
+    ABSTRACT_FROM => 'lib/Data/Dumper.pm',
     realclean     => { FILES => "@temps" },
     (%pod_scripts ? (
         PL_FILES  => \%pod_scripts,
