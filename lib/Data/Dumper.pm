@@ -322,12 +322,9 @@ sub _dump {
     $realtype = $realpack ? Scalar::Util::reftype($val) : ref $val;
     $id = format_refaddr($val);
 
-    # if it has a name, we need to either look it up, or keep a tab
-    # on it so we know when we hit it later
-    if (defined($name) and length($name)) {
-      # keep a tab on it so that we dont fall into recursive pit
-      if (exists $s->{seen}{$id}) {
-#    if ($s->{expdepth} < $s->{level}) {
+    # Note: By this point $name is always defined and of non-zero length
+    # keep a tab on it so that we dont fall into recursive pit
+    if (exists $s->{seen}{$id}) {
       if ($s->{purity} and $s->{level} > 0) {
         $out = ($realtype eq 'HASH')  ? '{}' :
                ($realtype eq 'ARRAY') ? '[]' :
@@ -347,18 +344,16 @@ sub _dump {
         }
       }
       return $out;
-#        }
-      }
-      else {
-        # store our name
-        $s->{seen}{$id} = [ (
-            ($name =~ /^[@%]/)
-              ? ('\\' . $name )
-              : ($realtype eq 'CODE' and $name =~ /^[*](.*)$/)
-                ? ('\\&' . $1 )
-                : $name          
-          ), $val ];
-      }
+    }
+    else {
+      # store our name
+      $s->{seen}{$id} = [ (
+          ($name =~ /^[@%]/)
+            ? ('\\' . $name )
+            : ($realtype eq 'CODE' and $name =~ /^[*](.*)$/)
+              ? ('\\&' . $1 )
+              : $name          
+        ), $val ];
     }
     my $no_bless = 0; 
     my $is_regex = 0;
