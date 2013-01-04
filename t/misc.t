@@ -39,5 +39,34 @@ my (@seen);
     $obj = Data::Dumper->new( [ \@c, \%d ], [ qw| *c *d | ] );
     $obj->Dump;
     @seen = $obj->Seen();
+    # Am not yet sure what Seen() is really supposed to do.
 #    say STDERR "x: @seen";
+#    say STDERR Dumper(\@seen);
 }
+
+{
+    my %dumpstr;
+
+    local $Data::Dumper::Useperl = 1;
+    $obj = Data::Dumper->new( [ \@c, \%d ] );
+    $dumpstr{useperl} = [ $obj->Values ];
+    local $Data::Dumper::Useperl = 0;
+
+    local $Data::Dumper::Useqq = 1;
+    $obj = Data::Dumper->new( [ \@c, \%d ] );
+    $dumpstr{useqq} = [ $obj->Values ];
+    local $Data::Dumper::Useqq = 0;
+
+    is_deeply($dumpstr{useperl}, $dumpstr{useqq},
+        "Useperl and Useqq return same");
+
+    local $Data::Dumper::Deparse = 1;
+    $obj = Data::Dumper->new( [ \@c, \%d ] );
+    $dumpstr{deparse} = [ $obj->Values ];
+    local $Data::Dumper::Deparse = 0;
+
+    is_deeply($dumpstr{useperl}, $dumpstr{deparse},
+        "Useperl and Deparse return same");
+
+}
+
