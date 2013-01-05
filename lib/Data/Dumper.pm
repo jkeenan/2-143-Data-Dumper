@@ -262,12 +262,6 @@ sub Dumpperl {
     {
       local($s->{apad}) = $s->{apad};
       $s->{apad} .= ' ' x (length($name) + 3) if $s->{indent} >= 2 and !$s->{terse};
-my $msg = "Triggering _dump from inside Dumpperl with value <";
-$msg .= (defined($val)) ? $val : '';
-$msg .= "> and name <";
-$msg .= (defined($name)) ? $name : '';
-$msg .= ">\n";
-#print STDERR $msg;
       $valstr = $s->_dump($val, $name);
     }
 
