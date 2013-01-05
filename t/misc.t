@@ -139,3 +139,61 @@ note("Argument validation for new()");
         "No lines of dumped output use default \$VAR");
 }
 
+{
+    note("\$Data::Dumper::Useqq and \$obj->Useqq");
+    my ($obj, %dumps, $useqq);
+    $obj = Data::Dumper->new([$a,$b]);
+    $dumps{'noprev'} = _dumptostr($obj);
+
+    $obj = Data::Dumper->new([$a,$b]);
+    $obj->Useqq(undef);
+    $dumps{'undef'} = _dumptostr($obj);
+
+    $obj = Data::Dumper->new([$a,$b]);
+    $obj->Useqq('');
+    $dumps{'emptystring'} = _dumptostr($obj);
+
+    $obj = Data::Dumper->new([$a,$b]);
+    $obj->Useqq(0);
+    $dumps{'zero'} = _dumptostr($obj);
+
+    my $current = $Data::Dumper::Useqq;
+    local $Data::Dumper::Useqq = 0;
+    $obj = Data::Dumper->new([$a,$b]);
+    $dumps{'dduzero'} = _dumptostr($obj);
+    local $Data::Dumper::Useqq = $current;
+
+    is($dumps{'noprev'}, $dumps{'undef'},
+        "No setting for \$Data::Dumper::Useqq and Useqq(undef) give same result");
+
+    is($dumps{'noprev'}, $dumps{'zero'},
+        "No setting for \$Data::Dumper::Useqq and Useqq(0) give same result");
+
+    is($dumps{'noprev'}, $dumps{'emptystring'},
+        "No setting for \$Data::Dumper::Useqq and Useqq('') give same result");
+
+    is($dumps{'noprev'}, $dumps{'dduzero'},
+        "No setting for \$Data::Dumper::Useqq and Useqq(undef) give same result");
+
+    local $Data::Dumper::Useqq = 1;
+    $obj = Data::Dumper->new([$a,$b]);
+    $dumps{'ddu'} = _dumptostr($obj);
+    local $Data::Dumper::Useqq = $current;
+
+    $obj = Data::Dumper->new([$a,$b]);
+    $obj->Useqq(1);
+    $dumps{'obj'} = _dumptostr($obj);
+    
+    is($dumps{'ddu'}, $dumps{'obj'},
+        "\$Data::Dumper::Useqq=1 and Useqq(1) give same result");
+
+    like($dumps{'ddu'},
+        qr/"$a".+?"$b"/s,
+        "Double-quotes used around values"
+    );
+
+    unlike($dumps{'ddu'},
+        qr/'$a'.+?'$b'/s,
+        "Single-quotes not used around values"
+    );
+}
