@@ -1,5 +1,7 @@
 package Testing;
 use 5.006_001;
+use strict;
+use warnings;
 require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT_OK = qw(_dumptostr);

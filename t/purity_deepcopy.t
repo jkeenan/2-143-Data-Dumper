@@ -15,7 +15,7 @@ BEGIN {
 use strict;
 
 use Data::Dumper;
-use Test::More tests => 12;
+use Test::More qw(no_plan); # tests => 14;
 use lib qw( ./t/lib );
 use Testing qw( _dumptostr );
 
@@ -38,6 +38,8 @@ note("\$Data::Dumper::Purity and Purity()");
     $obj = Data::Dumper->new([$a,$b,$c], [qw(a b c)]);
     $dumps{'noprev'} = _dumptostr($obj);
 
+    note("Discrepancy between Dumpxs() and Dumpperl() behavior with respect to \$Data::Dumper::Purity = undef");
+    local $Data::Dumper::Useperl = 1;
     $purity = undef;
     local $Data::Dumper::Purity = $purity;
     $obj = Data::Dumper->new([$a,$b,$c], [qw(a b c)]);
@@ -76,6 +78,14 @@ note("\$Data::Dumper::Purity and Purity()");
 
     is($dumps{'noprev'}, $dumps{'objzero'},
         "No previous Purity setting equivalent to Purity(0)");
+
+    $purity = undef;
+    $obj = Data::Dumper->new([$a,$b,$c], [qw(a b c)]);
+    $obj->Purity($purity);
+   $dumps{'objundef'} = _dumptostr($obj);
+
+    is($dumps{'noprev'}, $dumps{'objundef'},
+        "No previous Purity setting equivalent to Purity(undef)");
 }
 
 {
@@ -204,6 +214,14 @@ note("\$Data::Dumper::Deepcopy and Deepcopy()");
 
     is($dumps{'noprev'}, $dumps{'objzero'},
         "No previous Deepcopy setting equivalent to Deepcopy(0)");
+
+    $deepcopy = undef;
+    $obj = Data::Dumper->new([$a,$b,$c], [qw(a b c)]);
+    $obj->Deepcopy($deepcopy);
+    $dumps{'objundef'} = _dumptostr($obj);
+
+    is($dumps{'noprev'}, $dumps{'objundef'},
+        "No previous Deepcopy setting equivalent to Deepcopy(undef)");
 }
 
 {
