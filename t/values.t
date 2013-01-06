@@ -13,8 +13,7 @@ BEGIN {
 
 use strict;
 use Data::Dumper;
-$Data::Dumper::Indent=1;
-use Test::More qw(no_plan); # tests => 9;
+use Test::More tests => 4;
 
 my ($a, $b, $obj);
 my (@values, @names);

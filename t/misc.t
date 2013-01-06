@@ -1,11 +1,21 @@
-#!perl
-# t/misc.t - Test functionality for which we do not yet have a better place to
-# put the tests
+#!./perl -w
+# t/misc.t - Test various functionality
+
+BEGIN {
+    if ($ENV{PERL_CORE}){
+        require Config; import Config;
+        no warnings 'once';
+        if ($Config{'extensions'} !~ /\bData\/Dumper\b/) {
+            print "1..0 # Skip: Data::Dumper was not built\n";
+            exit 0;
+        }
+    }
+}
+
 use strict;
-use warnings;
 
 use Data::Dumper;
-use Test::More qw(no_plan); # tests => 10;
+use Test::More tests => 20;
 use lib qw( ./t/lib );
 use Testing qw( _dumptostr );
 
