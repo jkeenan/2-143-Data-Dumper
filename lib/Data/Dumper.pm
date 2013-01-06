@@ -361,6 +361,7 @@ sub _dump {
     # representation of the thing we are currently examining
     # at this depth (i.e., 'Foo=ARRAY(0xdeadbeef)'). 
     if (!$s->{purity}
+      and defined($s->{maxdepth})
       and $s->{maxdepth} > 0
       and $s->{level} >= $s->{maxdepth})
     {

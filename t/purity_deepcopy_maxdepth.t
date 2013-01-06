@@ -1,5 +1,6 @@
 #!./perl -w
-# t/purity_deepcopy.t - Test Purity(), Deepcopy() and recursive structures
+# t/purity_deepcopy_maxdepth.t - Test Purity(), Deepcopy(),
+# Maxdepth() and recursive structures
 
 BEGIN {
     if ($ENV{PERL_CORE}){
@@ -20,6 +21,7 @@ use lib qw( ./t/lib );
 use Testing qw( _dumptostr );
 
 my ($a, $b, $c, @d);
+my ($d, $e, $f);
 
 note("\$Data::Dumper::Purity and Purity()");
 
@@ -295,3 +297,92 @@ note("\$Data::Dumper::Deepcopy and Deepcopy()");
         "\$Data::Dumper::Deepcopy = 1 and Deepcopy(1) are equivalent");
 }
 
+note("\$Data::Dumper::Maxdepth and Maxdepth()");
+
+{
+    # Adapted from Dumper.pm POD
+
+    my ($obj, %dumps, $maxdepth);
+
+    $a = "pearl";
+    $b = [ $a ];
+    $c = { 'b' => $b };
+    $d = [ $c ];
+    $e = { 'd' => $d };
+    $f = { 'e' => $e };
+
+    note("Discrepancy between Dumpxs() and Dumpperl() behavior with respect to \$Data::Dumper::Maxdepth = undef");
+    local $Data::Dumper::Useperl = 1;
+
+    $obj = Data::Dumper->new([$f], [qw(f)]);
+    $dumps{'noprev'} = _dumptostr($obj);
+
+    $Data::Dumper::Maxdepth = undef;
+    $obj = Data::Dumper->new([$f], [qw(f)]);
+    $dumps{'ddmundef'} = _dumptostr($obj);
+
+    $maxdepth = 3;
+    local $Data::Dumper::Maxdepth = $maxdepth;
+    $obj = Data::Dumper->new([$f], [qw(f)]);
+    $dumps{'ddm'} = _dumptostr($obj);
+
+    is($dumps{'noprev'}, $dumps{'ddmundef'},
+        "No previous Maxdepth setting equivalent to \$Data::Dumper::Maxdepth = undef");
+
+    like($dumps{'noprev'}, qr/$a/s,
+        "Without Maxdepth, got output from deepest level");
+
+    isnt($dumps{'noprev'}, $dumps{'ddm'},
+        "No previous Maxdepth setting differs from setting a shallow Maxdepth");
+
+    unlike($dumps{'ddm'}, qr/$a/s,
+        "With Maxdepth, did not get output from deepest level");
+}
+
+{
+    # Adapted from Dumper.pm POD
+
+    my ($obj, %dumps, $maxdepth);
+
+    $a = "pearl";
+    $b = [ $a ];
+    $c = { 'b' => $b };
+    $d = [ $c ];
+    $e = { 'd' => $d };
+    $f = { 'e' => $e };
+
+    note("Discrepancy between Dumpxs() and Dumpperl() behavior with respect to \$Data::Dumper::Maxdepth = undef");
+    local $Data::Dumper::Useperl = 1;
+
+    $obj = Data::Dumper->new([$f], [qw(f)]);
+    $dumps{'noprev'} = _dumptostr($obj);
+
+    $obj = Data::Dumper->new([$f], [qw(f)]);
+    $obj->Maxdepth();
+    $dumps{'maxdepthempty'} = _dumptostr($obj);
+
+    is($dumps{'noprev'}, $dumps{'maxdepthempty'},
+        "No previous Maxdepth setting equivalent to Maxdepth() with no argument");
+
+    $obj = Data::Dumper->new([$f], [qw(f)]);
+    $obj->Maxdepth(undef);
+    $dumps{'maxdepthundef'} = _dumptostr($obj);
+
+    is($dumps{'noprev'}, $dumps{'maxdepthundef'},
+        "No previous Maxdepth setting equivalent to Maxdepth(undef)");
+
+    $maxdepth = 3;
+    $obj = Data::Dumper->new([$f], [qw(f)]);
+    $obj->Maxdepth($maxdepth);
+    $dumps{'maxdepthset'} = _dumptostr($obj);
+
+    isnt($dumps{'noprev'}, $dumps{'maxdepthset'},
+        "No previous Maxdepth setting differs from Maxdepth() with shallow depth");
+
+    local $Data::Dumper::Maxdepth = 3;
+    $obj = Data::Dumper->new([$f], [qw(f)]);
+    $dumps{'ddmset'} = _dumptostr($obj);
+
+    is($dumps{'maxdepthset'}, $dumps{'ddmset'},
+        "Maxdepth set and \$Data::Dumper::Maxdepth are equivalent");
+}
