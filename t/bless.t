@@ -14,42 +14,42 @@ BEGIN { use_ok('Data::Dumper') };
 # test under XS and pure Perl version
 foreach $Data::Dumper::Useperl (0, 1) {
 
-#diag("\$Data::Dumper::Useperl = $Data::Dumper::Useperl");
-
-{
-my $t = bless( {}, q{a'b} );
-my $dt = Dumper($t);
-my $o = <<'PERL';
+    #diag("\$Data::Dumper::Useperl = $Data::Dumper::Useperl");
+    
+    {
+        my $t = bless( {}, q{a'b} );
+        my $dt = Dumper($t);
+        my $o = <<'PERL';
 $VAR1 = bless( {}, 'a\'b' );
 PERL
-
-is($dt, $o, "package name in bless is escaped if needed");
-is_deeply(scalar eval($dt), $t, "eval reverts dump");
-}
-
-{
-my $t = bless( {}, q{a\\} );
-my $dt = Dumper($t);
-my $o = <<'PERL';
+    
+        is($dt, $o, "package name in bless is escaped if needed");
+        is_deeply(scalar eval($dt), $t, "eval reverts dump");
+    }
+    
+    {
+        my $t = bless( {}, q{a\\} );
+        my $dt = Dumper($t);
+        my $o = <<'PERL';
 $VAR1 = bless( {}, 'a\\' );
 PERL
-
-is($dt, $o, "package name in bless is escaped if needed");
-is_deeply(scalar eval($dt), $t, "eval reverts dump");
-}
-SKIP: {
-    skip(q/no 're::regexp_pattern'/, 1)
-        if ! defined(*re::regexp_pattern{CODE});
-
-my $t = bless( qr//, 'foo');
-my $dt = Dumper($t);
-my $o = ($] >= 5.013006 ? <<'PERL' : <<'PERL_LEGACY');
+    
+        is($dt, $o, "package name in bless is escaped if needed");
+        is_deeply(scalar eval($dt), $t, "eval reverts dump");
+    }
+    SKIP: {
+        skip(q/no 're::regexp_pattern'/, 1)
+            if ! defined(*re::regexp_pattern{CODE});
+    
+        my $t = bless( qr//, 'foo');
+        my $dt = Dumper($t);
+        my $o = ($] >= 5.013006 ? <<'PERL' : <<'PERL_LEGACY');
 $VAR1 = bless( qr/(?^:)/, 'foo' );
 PERL
 $VAR1 = bless( qr/(?-xism:)/, 'foo' );
 PERL_LEGACY
-
-is($dt, $o, "We can dump blessed qr//'s properly");
-
-}
+    
+        is($dt, $o, "We can dump blessed qr//'s properly");
+    
+    }
 }

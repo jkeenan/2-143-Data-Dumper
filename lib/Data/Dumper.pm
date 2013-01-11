@@ -1263,20 +1263,20 @@ distribution for more examples.)
     sub new { bless { state => 'awake' }, shift }
     sub Freeze {
         my $s = shift;
-    print STDERR "preparing to sleep\n";
-    $s->{state} = 'asleep';
-    return bless $s, 'Foo::ZZZ';
+        print STDERR "preparing to sleep\n";
+        $s->{state} = 'asleep';
+        return bless $s, 'Foo::ZZZ';
     }
 
     package Foo::ZZZ;
     sub Thaw {
         my $s = shift;
-    print STDERR "waking up\n";
-    $s->{state} = 'awake';
-    return bless $s, 'Foo';
+        print STDERR "waking up\n";
+        $s->{state} = 'awake';
+        return bless $s, 'Foo';
     }
 
-    package Foo;
+    package main;
     use Data::Dumper;
     $a = Foo->new;
     $b = Data::Dumper->new([$a], ['c']);

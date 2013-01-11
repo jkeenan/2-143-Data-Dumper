@@ -16,7 +16,7 @@ BEGIN {
 use strict;
 
 use Data::Dumper;
-use Test::More qw(no_plan); # tests => 14;
+use Test::More tests => 22;
 use lib qw( ./t/lib );
 use Testing qw( _dumptostr );
 
