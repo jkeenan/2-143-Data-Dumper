@@ -62,21 +62,20 @@ sub j { print "Hello world\n"; }
     is(@rv, 0, "Seen(ref other than hashref) returned empty array");
 }
 
-#{
-#    $obj = Data::Dumper->new( [ \@e, \%f ]);
-#    my $k = 'marvin';
-#    @rv = $obj->Seen( { \$k => 'snark' } );
-#}
+{
+    $obj = Data::Dumper->new( [ \@e, \%f ]);
+    @rv = $obj->Seen( { '*samba' => \@g } );
+    is_deeply($rv[0], $obj, "Got the object back: value array ref");
+}
 
 {
     $obj = Data::Dumper->new( [ \@e, \%f ]);
-    @rv = $obj->Seen( { 'samba' => \@g } );
+    @rv = $obj->Seen( { '*canasta' => \%h } );
+    is_deeply($rv[0], $obj, "Got the object back: value hash ref");
 }
+
 {
     $obj = Data::Dumper->new( [ \@e, \%f ]);
-    @rv = $obj->Seen( { 'canasta' => \%h } );
-}
-{
-    $obj = Data::Dumper->new( [ \@e, \%f ]);
-    @rv = $obj->Seen( { 'pinochle' => \&j } );
+    @rv = $obj->Seen( { '*pinochle' => \&j } );
+    is_deeply($rv[0], $obj, "Got the object back: value code ref");
 }
