@@ -16,7 +16,7 @@ BEGIN {
 use strict;
 
 use Data::Dumper;
-use Test::More tests => 23;
+use Test::More tests => 24;
 use lib qw( ./t/lib );
 use Testing qw( _dumptostr );
 
@@ -394,10 +394,25 @@ note("\$Data::Dumper::Maxdepth and Maxdepth()");
     local $SIG{__WARN__} = sub { $warning = $_[0] };
 
     local $Data::Dumper::Deparse = 0;
-    local $Data::Dumper::Purity = 1;
+    local $Data::Dumper::Purity  = 1;
+    local $Data::Dumper::Useperl = 1;
     sub hello { print "Hello world\n"; }
     $obj = Data::Dumper->new( [ \&hello ] );
     $dumps{'ddsksub'} = _dumptostr($obj);
     like($warning, qr/^Encountered CODE ref, using dummy placeholder/,
         "Got expected warning: dummy placeholder under Purity = 1");
+}
+
+{
+    my ($obj, %dumps);
+
+    my $warning = '';
+    local $SIG{__WARN__} = sub { $warning = $_[0] };
+
+    local $Data::Dumper::Deparse = 0;
+    local $Data::Dumper::Useperl = 1;
+    sub hello { print "Hello world\n"; }
+    $obj = Data::Dumper->new( [ \&hello ] );
+    $dumps{'ddsksub'} = _dumptostr($obj);
+    ok(! $warning, "Encountered CODE ref, but no Purity, hence no warning");
 }
