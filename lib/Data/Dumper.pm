@@ -73,25 +73,25 @@ sub new {
   my($s) = { 
         level      => 0,           # current recursive depth
         indent     => $Indent,     # various styles of indenting
-        pad    => $Pad,        # all lines prefixed by this string
+        pad        => $Pad,        # all lines prefixed by this string
         xpad       => "",          # padding-per-level
         apad       => "",          # added padding for hash keys n such
         sep        => "",          # list separator
-        pair    => $Pair,    # hash key/value separator: defaults to ' => '
+        pair       => $Pair,    # hash key/value separator: defaults to ' => '
         seen       => {},          # local (nested) refs (id => [name, val])
         todump     => $v,          # values to dump []
         names      => $n,          # optional names for values []
         varname    => $Varname,    # prefix to use for tagging nameless ones
         purity     => $Purity,     # degree to which output is evalable
-        useqq     => $Useqq,      # use "" for strings (backslashitis ensues)
-        terse     => $Terse,      # avoid name output (where feasible)
+        useqq      => $Useqq,      # use "" for strings (backslashitis ensues)
+        terse      => $Terse,      # avoid name output (where feasible)
         freezer    => $Freezer,    # name of Freezer method for objects
         toaster    => $Toaster,    # name of method to revive objects
-        deepcopy    => $Deepcopy,   # dont cross-ref, except to stop recursion
-        quotekeys    => $Quotekeys,  # quote hash keys
+        deepcopy   => $Deepcopy,   # dont cross-ref, except to stop recursion
+        quotekeys  => $Quotekeys,  # quote hash keys
         'bless'    => $Bless,    # keyword to use for "bless"
 #        expdepth   => $Expdepth,   # cutoff depth for explicit dumping
-        maxdepth    => $Maxdepth,   # depth beyond which we give up
+        maxdepth   => $Maxdepth,   # depth beyond which we give up
         useperl    => $Useperl,    # use the pure Perl implementation
         sortkeys   => $Sortkeys,   # flag or filter for sorting hash keys
         deparse    => $Deparse,    # use B::Deparse for coderefs
@@ -150,20 +150,20 @@ sub Seen {
     my($k, $v, $id);
     while (($k, $v) = each %$g) {
       if (defined $v and ref $v) {
-    $id = format_refaddr($v);
-    if ($k =~ /^[*](.*)$/) {
-      $k = (ref $v eq 'ARRAY') ? ( "\\\@" . $1 ) :
-           (ref $v eq 'HASH')  ? ( "\\\%" . $1 ) :
-           (ref $v eq 'CODE')  ? ( "\\\&" . $1 ) :
-                     (   "\$" . $1 ) ;
-    }
-    elsif ($k !~ /^\$/) {
-      $k = "\$" . $k;
-    }
-    $s->{seen}{$id} = [$k, $v];
+        $id = format_refaddr($v);
+        if ($k =~ /^[*](.*)$/) {
+          $k = (ref $v eq 'ARRAY') ? ( "\\\@" . $1 ) :
+               (ref $v eq 'HASH')  ? ( "\\\%" . $1 ) :
+               (ref $v eq 'CODE')  ? ( "\\\&" . $1 ) :
+               (   "\$" . $1 ) ;
+        }
+        elsif ($k !~ /^\$/) {
+          $k = "\$" . $k;
+        }
+        $s->{seen}{$id} = [$k, $v];
       }
       else {
-    carp "Only refs supported, ignoring non-ref item \$$k";
+        carp "Only refs supported, ignoring non-ref item \$$k";
       }
     }
     return $s;
@@ -180,11 +180,11 @@ sub Values {
   my($s, $v) = @_;
   if (defined($v)) {
     if (ref($v) eq 'ARRAY')  {
-        $s->{todump} = [@$v];        # make a copy
-        return $s;
+      $s->{todump} = [@$v];        # make a copy
+      return $s;
     }
     else {
-        croak "Argument to Values, if provided, must be array ref";
+      croak "Argument to Values, if provided, must be array ref";
     }
   }
   else {
@@ -203,7 +203,7 @@ sub Names {
       return $s;
     }
     else {
-        croak "Argument to Names, if provided, must be array ref";
+      croak "Argument to Names, if provided, must be array ref";
     }
   }
   else {
