@@ -77,3 +77,9 @@ my (@e, %f, @rv, @g, %h);
     is(@rv, 0, "Seen(undef) returned empty array");
 }
 
+{
+    $obj = Data::Dumper->new( [ \@e, \%f ]);
+    @rv = $obj->Seen( [ qw| mark snark | ] );
+    is(@rv, 0, "Seen(ref other than hashref) returned empty array");
+}
+
