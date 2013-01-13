@@ -15,7 +15,7 @@ use strict;
 use Carp;
 use Data::Dumper;
 $Data::Dumper::Indent=1;
-use Test::More qw(no_plan); # tests => 9;
+use Test::More tests => 21;
 use lib qw( ./t/lib );
 use Testing qw( _dumptostr );
 my ($a, $b, $obj);
@@ -180,3 +180,34 @@ like($dumpstr,
 );
 
 local $Data::Dumper::Deparse=0;
+
+{
+    my (%dumps, $starting);
+
+    $starting = $Data::Dumper::Useperl;
+
+    local $Data::Dumper::Useperl = 0;
+    $obj = Data::Dumper->new([$a, $b]);
+    $dumps{'dduzero'} = _dumptostr($obj);
+
+    local $Data::Dumper::Useperl = undef;
+    $obj = Data::Dumper->new([$a, $b]);
+    $dumps{'dduundef'} = _dumptostr($obj);
+    
+    $Data::Dumper::Useperl= $starting;
+
+    $obj = Data::Dumper->new([$a, $b]);
+    $obj->Useperl(0);
+    $dumps{'useperlzero'} = _dumptostr($obj);
+
+    $obj = Data::Dumper->new([$a, $b]);
+    $obj->Useperl(undef);
+    $dumps{'useperlundef'} = _dumptostr($obj);
+
+    is($dumps{'dduzero'}, $dumps{'dduundef'},
+        "\$Data::Dumper::Useperl(0) and (undef) are equivalent");
+    is($dumps{'useperlzero'}, $dumps{'useperlundef'}, 
+        "Useperl(0) and (undef) are equivalent");
+    is($dumps{'dduundef'}, $dumps{'useperlundef'},
+        "\$Data::Dumper::Useperl(undef) and Useperl(undef) are equivalent");
+}
