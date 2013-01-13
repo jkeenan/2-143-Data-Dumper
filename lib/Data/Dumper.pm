@@ -443,7 +443,8 @@ sub _dump {
         ($name =~ /^\\?[\%\@\*\$][^{].*[]}]$/) ? ($mname = $name) :
         ($mname = $name . '->');
       $mname .= '->' if $mname =~ /^\*.+\{[A-Z]+\}$/;
-      my ($sortkeys, $keys, $key) = ("$s->{sortkeys}");
+      my $sortkeys = defined($s->{sortkeys}) ? $s->{sortkeys} : '';
+      my $keys = [];
       if ($sortkeys) {
         if (ref($s->{sortkeys}) eq 'CODE') {
           $keys = $s->{sortkeys}($val);
@@ -460,6 +461,7 @@ sub _dump {
       # Ensure hash iterator is reset
       keys(%$val);
 
+      my $key;
       while (($k, $v) = ! $sortkeys ? (each %$val) :
          @$keys ? ($key = shift(@$keys), $val->{$key}) :
          () ) 
