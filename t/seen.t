@@ -21,44 +21,12 @@ use Testing qw( _dumptostr );
 
 my ($obj, %dumps);
 
-#my ($a, $b, $c, @d);
-#@d = ('c');
-#$c = \@d;
-#$b = {};
-#$a = [1, $b, $c];
-#$b->{a} = $a;
-#$b->{b} = $a->[1];
-#$b->{c} = $a->[2];
-#
-#$obj = Data::Dumper->new([$a,$b], [qw(a b)]);
-#$obj->Seen({'*c' => $c});
-#$dumps{'seenstarc'} = _dumptostr($obj);
-##say STDERR $dumps{'seenstarc'};
-#
-#$obj = Data::Dumper->new([$a,$b], [qw(a b)]);
-#$obj->Seen();
-#$dumps{'seennoargs'} = _dumptostr($obj);
-##say STDERR $dumps{'seennoargs'};
-
 my (@e, %f, @rv, @g, %h);
 @e = ( qw| alpha beta gamma | );
 %f = ( epsilon => 'zeta', eta => 'theta' );
 @g = ( qw| iota kappa lambda | );
 %h = ( mu => 'nu', omicron => 'pi' );
-
-#$obj = Data::Dumper->new( [ \@e, \%f ]);
-#@rv = $obj->Seen();
-#say STDERR "rv: @rv";
-#say STDERR "xyz: ", Dumper $obj->{seen};
-#$dumps{'seen_array_hash_no_args'} = _dumptostr($obj);
-#say STDERR $dumps{'seen_array_hash_no_args'};
-#
-#$obj = Data::Dumper->new( [ \@e, \%f ], [ '*e', '*f' ]);
-#@rv = $obj->Seen();
-#say STDERR "rv: @rv";
-#say STDERR "xyz: ", Dumper $obj->{seen};
-#$dumps{'seen_array_hash_names_no_args'} = _dumptostr($obj);
-#say STDERR $dumps{'seen_array_hash_names_no_args'};
+sub j { print "Hello world\n"; }
 
 {
     my $warning = '';
@@ -94,3 +62,21 @@ my (@e, %f, @rv, @g, %h);
     is(@rv, 0, "Seen(ref other than hashref) returned empty array");
 }
 
+#{
+#    $obj = Data::Dumper->new( [ \@e, \%f ]);
+#    my $k = 'marvin';
+#    @rv = $obj->Seen( { \$k => 'snark' } );
+#}
+
+{
+    $obj = Data::Dumper->new( [ \@e, \%f ]);
+    @rv = $obj->Seen( { 'samba' => \@g } );
+}
+{
+    $obj = Data::Dumper->new( [ \@e, \%f ]);
+    @rv = $obj->Seen( { 'canasta' => \%h } );
+}
+{
+    $obj = Data::Dumper->new( [ \@e, \%f ]);
+    @rv = $obj->Seen( { 'pinochle' => \&j } );
+}
