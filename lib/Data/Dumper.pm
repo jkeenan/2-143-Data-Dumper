@@ -294,8 +294,7 @@ use constant _bad_vsmg => defined &_vstring && (_vstring(~v0)||'') eq "v0";
 #
 sub _dump {
   my($s, $val, $name) = @_;
-  my($sname);
-  my($out, $realpack, $realtype, $type, $ipad, $id, $blesspad);
+  my($out, $type, $id, $sname);
 
   $type = ref $val;
   $out = "";
@@ -312,8 +311,8 @@ sub _dump {
     }
 
     require Scalar::Util;
-    $realpack = Scalar::Util::blessed($val);
-    $realtype = $realpack ? Scalar::Util::reftype($val) : ref $val;
+    my $realpack = Scalar::Util::blessed($val);
+    my $realtype = $realpack ? Scalar::Util::reftype($val) : ref $val;
     $id = format_refaddr($val);
 
     # Note: By this point $name is always defined and of non-zero length
@@ -369,6 +368,7 @@ sub _dump {
     }
 
     # we have a blessed ref
+    my ($blesspad);
     if ($realpack and !$no_bless) {
       $out = $s->{'bless'} . '( ';
       $blesspad = $s->{apad};
@@ -376,7 +376,7 @@ sub _dump {
     }
 
     $s->{level}++;
-    $ipad = $s->{xpad} x $s->{level};
+    my $ipad = $s->{xpad} x $s->{level};
 
     if ($is_regex) {
         my $pat;

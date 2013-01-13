@@ -411,7 +411,7 @@ note("\$Data::Dumper::Maxdepth and Maxdepth()");
 
     local $Data::Dumper::Deparse = 0;
     local $Data::Dumper::Useperl = 1;
-    sub hello { print "Hello world\n"; }
+    sub jello { print "Jello world\n"; }
     $obj = Data::Dumper->new( [ \&hello ] );
     $dumps{'ddsksub'} = _dumptostr($obj);
     ok(! $warning, "Encountered CODE ref, but no Purity, hence no warning");
