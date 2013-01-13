@@ -85,4 +85,6 @@ $k = 'just another scalar';
     $obj = Data::Dumper->new( [ \@e, \%f ]);
     @rv = $obj->Seen( { '*poker' => \$k } );
     is_deeply($rv[0], $obj, "Got the object back: value ref to scalar");
+    @rv = $obj->Seen( { '*pinochle' => \&j } );
 }
+
