@@ -15,7 +15,7 @@ BEGIN {
 use strict;
 
 use Data::Dumper;
-use Test::More qw(no_plan); # tests =>  8;
+use Test::More tests => 22;
 use lib qw( ./t/lib );
 use Testing qw( _dumptostr );
 
@@ -173,6 +173,74 @@ my %d = (
     unlike($dumps{'ddsksub'},
         qr/alpha/s,
         "Sortkeys filtered out one key per request");
+}
+
+{
+    my ($obj, %dumps, $sortkeys, $starting);
+
+    note("\$Data::Dumper::Sortkeys(undef) and Sortkeys(undef)");
+    note("XS implementation");
+    $Data::Dumper::Useperl = 0;
+
+    $starting = $Data::Dumper::Sortkeys;
+    $sortkeys = 0;
+    local $Data::Dumper::Sortkeys = $sortkeys;
+    $obj = Data::Dumper->new( [ \%d ] );
+    $dumps{'ddskzero'} = _dumptostr($obj);
+    local $Data::Dumper::Sortkeys = $starting;
+
+    $obj = Data::Dumper->new( [ \%d ] );
+    $obj->Sortkeys($sortkeys);
+    $dumps{'objskzero'} = _dumptostr($obj);
+
+    $sortkeys = undef;
+    local $Data::Dumper::Sortkeys = $sortkeys;
+    $obj = Data::Dumper->new( [ \%d ] );
+    $dumps{'ddskundef'} = _dumptostr($obj);
+    local $Data::Dumper::Sortkeys = $starting;
+
+    $obj = Data::Dumper->new( [ \%d ] );
+    $obj->Sortkeys($sortkeys);
+    $dumps{'objskundef'} = _dumptostr($obj);
+
+    is($dumps{'ddskzero'}, $dumps{'objskzero'},
+        "\$Data::Dumper::Sortkeys = 0 and Sortkeys(0) are equivalent");
+    is($dumps{'ddskzero'}, $dumps{'ddskundef'},
+        "\$Data::Dumper::Sortkeys = 0 and = undef equivalent");
+    is($dumps{'objkzero'}, $dumps{'objkundef'},
+        "Sortkeys(0) and Sortkeys(undef) are equivalent");
+    %dumps = ();
+
+    note("Perl implementation");
+    $Data::Dumper::Useperl = 1;
+
+    $starting = $Data::Dumper::Sortkeys;
+    $sortkeys = 0;
+    local $Data::Dumper::Sortkeys = $sortkeys;
+    $obj = Data::Dumper->new( [ \%d ] );
+    $dumps{'ddskzero'} = _dumptostr($obj);
+    local $Data::Dumper::Sortkeys = $starting;
+
+    $obj = Data::Dumper->new( [ \%d ] );
+    $obj->Sortkeys($sortkeys);
+    $dumps{'objskzero'} = _dumptostr($obj);
+
+    $sortkeys = undef;
+    local $Data::Dumper::Sortkeys = $sortkeys;
+    $obj = Data::Dumper->new( [ \%d ] );
+    $dumps{'ddskundef'} = _dumptostr($obj);
+    local $Data::Dumper::Sortkeys = $starting;
+
+    $obj = Data::Dumper->new( [ \%d ] );
+    $obj->Sortkeys($sortkeys);
+    $dumps{'objskundef'} = _dumptostr($obj);
+
+    is($dumps{'ddskzero'}, $dumps{'objskzero'},
+        "\$Data::Dumper::Sortkeys = 0 and Sortkeys(0) are equivalent");
+    is($dumps{'ddskzero'}, $dumps{'ddskundef'},
+        "\$Data::Dumper::Sortkeys = 0 and = undef equivalent");
+    is($dumps{'objkzero'}, $dumps{'objkundef'},
+        "Sortkeys(0) and Sortkeys(undef) are equivalent");
 }
 
 note("Internal subroutine _sortkeys");
