@@ -149,21 +149,26 @@ sub Seen {
     init_refaddr_format();
     my($k, $v, $id);
     while (($k, $v) = each %$g) {
-      if (defined $v and ref $v) {
-        $id = format_refaddr($v);
-        if ($k =~ /^[*](.*)$/) {
-          $k = (ref $v eq 'ARRAY') ? ( "\\\@" . $1 ) :
-               (ref $v eq 'HASH')  ? ( "\\\%" . $1 ) :
-               (ref $v eq 'CODE')  ? ( "\\\&" . $1 ) :
-               (   "\$" . $1 ) ;
+      if (defined $v) {
+        if (ref $v) {
+          $id = format_refaddr($v);
+          if ($k =~ /^[*](.*)$/) {
+            $k = (ref $v eq 'ARRAY') ? ( "\\\@" . $1 ) :
+                 (ref $v eq 'HASH')  ? ( "\\\%" . $1 ) :
+                 (ref $v eq 'CODE')  ? ( "\\\&" . $1 ) :
+                 (   "\$" . $1 ) ;
+          }
+          elsif ($k !~ /^\$/) {
+            $k = "\$" . $k;
+          }
+          $s->{seen}{$id} = [$k, $v];
         }
-        elsif ($k !~ /^\$/) {
-          $k = "\$" . $k;
+        else {
+          carp "Only refs supported, ignoring non-ref item \$$k";
         }
-        $s->{seen}{$id} = [$k, $v];
       }
       else {
-        carp "Only refs supported, ignoring non-ref item \$$k";
+        carp "Value of ref must be defined; ignoring non-ref item \$$k";
       }
     }
     return $s;

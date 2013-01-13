@@ -72,6 +72,17 @@ my (@e, %f, @rv, @g, %h);
 }
 
 {
+    my $warning = '';
+    local $SIG{__WARN__} = sub { $warning = $_[0] };
+
+    $obj = Data::Dumper->new( [ \@e, \%f ]);
+    @rv = $obj->Seen( { mark => undef } );
+    like($warning,
+        qr/^Value of ref must be defined; ignoring non-ref item \$mark/,
+        "Got expected warning for undefined value of item");
+}
+
+{
     $obj = Data::Dumper->new( [ \@e, \%f ]);
     @rv = $obj->Seen( undef );
     is(@rv, 0, "Seen(undef) returned empty array");
