@@ -13,7 +13,7 @@ BEGIN {
 }
 
 use strict;
-use Test::More tests => 13;
+use Test::More tests => 15;
 use Data::Dumper;
 use lib qw( ./t/lib );
 use Testing qw( _dumptostr );
@@ -28,7 +28,11 @@ use Testing qw( _dumptostr );
        "Use of freezer sub which returns non-ref worked.");
     like($dumped_foo, qr/frozed/, 
          "Dumped string has the key added by Freezer.");
-    
+    # test that list-context freeze return doesn't contain the freezer's return
+    # value; RT #116364
+    like(join(" ", Dumper($foo)), qr/\A\$VAR1 = /,
+         "Dumped list doesn't begin with Freezer's return value");
+
     # run the same tests with useperl.  this always worked
     {
         local $Data::Dumper::Useperl = 1;
@@ -38,6 +42,8 @@ use Testing qw( _dumptostr );
            "Use of freezer sub which returns non-ref worked with useperl");
         like($dumped_foo, qr/frozed/, 
              "Dumped string has the key added by Freezer with useperl.");
+        like(join(" ", Dumper($foo)), qr/\A\$VAR1 = /,
+             "Dumped list doesn't begin with Freezer's return value with useperl");
     }
     
     # test for warning when an object does not have a freeze()
@@ -97,10 +103,7 @@ use Testing qw( _dumptostr );
         "\$Data::Dumper::Freezer and Freezer() are equivalent");
 }
 
-TODO: {
-    local $TODO =
-        q{RT #116364: $Data::Dumper::Freezer('foo') gives different results under XS and Useperl};
-
+{
     my ($obj, %dumps);
     my $foo = Test1->new("foo");
 
@@ -118,10 +121,7 @@ TODO: {
         "\$Data::Dumper::Freezer() gives same results under XS and Useperl");
 }
 
-TODO: {
-    local $TODO =
-        q{RT #116364: $obj->Freezer('foo') gives different results under XS and Useperl};
-
+{
     my ($obj, %dumps);
     my $foo = Test1->new("foo");
 
