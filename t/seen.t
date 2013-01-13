@@ -81,10 +81,21 @@ $k = 'just another scalar';
     is_deeply($rv[0], $obj, "Got the object back: value code ref");
 }
 
-{
-    $obj = Data::Dumper->new( [ \@e, \%f ]);
-    @rv = $obj->Seen( { '*poker' => \$k } );
-    is_deeply($rv[0], $obj, "Got the object back: value ref to scalar");
-    @rv = $obj->Seen( { '*pinochle' => \&j } );
-}
+#{
+#my $str;
+#    $obj = Data::Dumper->new( [ \@e, \%f ]);
+#    @rv = $obj->Seen( { '*poker' => \$k } );
+#    $str = Dumper($rv[0]);
+#print STDERR "after poker: $str\n";
+#    is_deeply($rv[0], $obj, "Got the object back: value ref to scalar");
+#
+#    @rv = $obj->Seen( { '*pinochle' => \&j } );
+#    $str = Dumper($rv[0]);
+#print STDERR "after pinochle: $str\n";
+#
+#$obj->Reset;
+#    @rv = $obj->Seen();
+#    $str = Dumper($rv[0]);
+#print STDERR "after empty Seen: $str\n";
+#}
 

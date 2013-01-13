@@ -20,32 +20,32 @@ use Testing qw( _dumptostr );
 
 {
     local $Data::Dumper::Freezer = 'freeze';
-    
+
     # test for seg-fault bug when freeze() returns a non-ref
-    my $foo = Test1->new("foo");
-    my $dumped_foo = Dumper($foo);
-    ok($dumped_foo, 
-       "Use of freezer sub which returns non-ref worked.");
-    like($dumped_foo, qr/frozed/, 
-         "Dumped string has the key added by Freezer.");
-    # test that list-context freeze return doesn't contain the freezer's return
-    # value; RT #116364
-    like(join(" ", Dumper($foo)), qr/\A\$VAR1 = /,
-         "Dumped list doesn't begin with Freezer's return value");
+    {
+        my $foo = Test1->new("foo");
+        my $dumped_foo = Dumper($foo);
+        ok($dumped_foo,
+           "Use of freezer sub which returns non-ref worked.");
+        like($dumped_foo, qr/frozed/,
+             "Dumped string has the key added by Freezer with useperl.");
+        like(join(" ", Dumper($foo)), qr/\A\$VAR1 = /,
+             "Dumped list doesn't begin with Freezer's return value with useperl");
+    }
 
     # run the same tests with useperl.  this always worked
     {
         local $Data::Dumper::Useperl = 1;
         my $foo = Test1->new("foo");
         my $dumped_foo = Dumper($foo);
-        ok($dumped_foo, 
+        ok($dumped_foo,
            "Use of freezer sub which returns non-ref worked with useperl");
-        like($dumped_foo, qr/frozed/, 
+        like($dumped_foo, qr/frozed/,
              "Dumped string has the key added by Freezer with useperl.");
         like(join(" ", Dumper($foo)), qr/\A\$VAR1 = /,
              "Dumped list doesn't begin with Freezer's return value with useperl");
     }
-    
+
     # test for warning when an object does not have a freeze()
     {
         my $warned = 0;
@@ -54,8 +54,7 @@ use Testing qw( _dumptostr );
         my $dumped_bar = Dumper($bar);
         is($warned, 0, "A missing freeze() shouldn't warn.");
     }
-    
-    
+
     # run the same test with useperl, which always worked
     {
         local $Data::Dumper::Useperl = 1;
@@ -65,7 +64,7 @@ use Testing qw( _dumptostr );
         my $dumped_bar = Dumper($bar);
         is($warned, 0, "A missing freeze() shouldn't warn with useperl");
     }
-    
+
     # a freeze() which die()s should still trigger the warning
     {
         my $warned = 0;
@@ -74,7 +73,7 @@ use Testing qw( _dumptostr );
         my $dumped_bar = Dumper($bar);
         is($warned, 1, "A freeze() which die()s should warn.");
     }
-    
+
     # the same should work in useperl
     {
         local $Data::Dumper::Useperl = 1;
@@ -98,7 +97,7 @@ use Testing qw( _dumptostr );
     $obj = Data::Dumper->new( [ $foo ] );
     $obj->Freezer('freeze');
     $dumps{'objset'} = _dumptostr($obj);
-    
+
     is($dumps{'ddftrue'}, $dumps{'objset'},
         "\$Data::Dumper::Freezer and Freezer() are equivalent");
 }
@@ -116,8 +115,8 @@ use Testing qw( _dumptostr );
     local $Data::Dumper::Useperl = 0;
     $obj = Data::Dumper->new( [ $foo ] );
     $dumps{'ddftruexs'} = _dumptostr($obj);
-    
-    is( $dumps{'ddftruexs'}, $dumps{'ddftrueuseperl'}, 
+
+    is( $dumps{'ddftruexs'}, $dumps{'ddftrueuseperl'},
         "\$Data::Dumper::Freezer() gives same results under XS and Useperl");
 }
 
@@ -129,12 +128,12 @@ use Testing qw( _dumptostr );
     $obj = Data::Dumper->new( [ $foo ] );
     $obj->Freezer('freeze');
     $dumps{'objsetuseperl'} = _dumptostr($obj);
-    
+
     local $Data::Dumper::Useperl = 0;
     $obj = Data::Dumper->new( [ $foo ] );
     $obj->Freezer('freeze');
     $dumps{'objsetxs'} = _dumptostr($obj);
-    
+
     is($dumps{'objsetxs'}, $dumps{'objsetuseperl'},
         "Freezer() gives same results under XS and Useperl");
 }
