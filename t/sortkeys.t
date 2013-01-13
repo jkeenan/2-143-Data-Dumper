@@ -15,7 +15,7 @@ BEGIN {
 use strict;
 
 use Data::Dumper;
-use Test::More tests => 22;
+use Test::More tests => 23;
 use lib qw( ./t/lib );
 use Testing qw( _dumptostr );
 
@@ -255,3 +255,23 @@ my $rv = Data::Dumper::_sortkeys(\%e);
 is(ref($rv), 'ARRAY', "Data::Dumper::_sortkeys returned an array ref");
 is_deeply($rv, [ qw( kappa lambda mu nu omicron ) ],
     "Got keys in Perl default order");
+
+{
+    my $warning = '';
+    local $SIG{__WARN__} = sub { $warning = $_[0] };
+
+    my ($obj, %dumps, $starting);
+
+    note("\$Data::Dumper::Sortkeys and Sortkeys() set to coderef");
+    sub badreturnvalue { return { %{+shift} }; }
+
+    note("Perl implementation");
+    $Data::Dumper::Useperl = 1;
+
+    $starting = $Data::Dumper::Sortkeys;
+    local $Data::Dumper::Sortkeys = \&badreturnvalue;
+    $obj = Data::Dumper->new( [ \%d ] );
+    $dumps{'ddsksub'} = _dumptostr($obj);
+    like($warning, qr/^Sortkeys subroutine did not return ARRAYREF/,
+        "Got expected warning: sorting routine did not return array ref");
+}

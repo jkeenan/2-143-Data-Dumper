@@ -16,7 +16,7 @@ BEGIN {
 use strict;
 
 use Data::Dumper;
-use Test::More tests => 22;
+use Test::More tests => 23;
 use lib qw( ./t/lib );
 use Testing qw( _dumptostr );
 
@@ -385,4 +385,19 @@ note("\$Data::Dumper::Maxdepth and Maxdepth()");
 
     is($dumps{'maxdepthset'}, $dumps{'ddmset'},
         "Maxdepth set and \$Data::Dumper::Maxdepth are equivalent");
+}
+
+{
+    my ($obj, %dumps);
+
+    my $warning = '';
+    local $SIG{__WARN__} = sub { $warning = $_[0] };
+
+    local $Data::Dumper::Deparse = 0;
+    local $Data::Dumper::Purity = 1;
+    sub hello { print "Hello world\n"; }
+    $obj = Data::Dumper->new( [ \&hello ] );
+    $dumps{'ddsksub'} = _dumptostr($obj);
+    like($warning, qr/^Encountered CODE ref, using dummy placeholder/,
+        "Got expected warning: dummy placeholder under Purity = 1");
 }
