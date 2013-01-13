@@ -21,12 +21,13 @@ use Testing qw( _dumptostr );
 
 my ($obj, %dumps);
 
-my (@e, %f, @rv, @g, %h);
+my (@e, %f, @rv, @g, %h, $k);
 @e = ( qw| alpha beta gamma | );
 %f = ( epsilon => 'zeta', eta => 'theta' );
 @g = ( qw| iota kappa lambda | );
 %h = ( mu => 'nu', omicron => 'pi' );
 sub j { print "Hello world\n"; }
+$k = 'just another scalar';
 
 {
     my $warning = '';
@@ -78,4 +79,10 @@ sub j { print "Hello world\n"; }
     $obj = Data::Dumper->new( [ \@e, \%f ]);
     @rv = $obj->Seen( { '*pinochle' => \&j } );
     is_deeply($rv[0], $obj, "Got the object back: value code ref");
+}
+
+{
+    $obj = Data::Dumper->new( [ \@e, \%f ]);
+    @rv = $obj->Seen( { '*poker' => \$k } );
+    is_deeply($rv[0], $obj, "Got the object back: value ref to scalar");
 }
