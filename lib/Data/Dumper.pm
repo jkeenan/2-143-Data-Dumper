@@ -240,28 +240,9 @@ sub Dumpperl {
   $s = $s->new(@_) unless ref $s;
 
   for $val (@{$s->{todump}}) {
-    my $out = "";
     @post = ();
     $name = $s->{names}[$i++];
-    if (defined $name) {
-      if ($name =~ /^[*](.*)$/) {
-        if (defined $val) {
-            $name = (ref $val eq 'ARRAY') ? ( "\@" . $1 ) :
-              (ref $val eq 'HASH')  ? ( "\%" . $1 ) :
-              (ref $val eq 'CODE')  ? ( "\*" . $1 ) :
-              ( "\$" . $1 ) ;
-        }
-        else {
-          $name = "\$" . $1;
-        }
-      }
-      elsif ($name !~ /^\$/) {
-        $name = "\$" . $name;
-      }
-    }
-    else { # no names provided
-      $name = "\$" . $s->{varname} . $i;
-    }
+    $name = $s->_refine_name($name, $val, $i);
 
     my $valstr;
     {
@@ -271,9 +252,7 @@ sub Dumpperl {
     }
 
     $valstr = "$name = " . $valstr . ';' if @post or !$s->{terse};
-    $out .= $s->{pad} . $valstr . $s->{sep};
-    $out .= $s->{pad} . join(';' . $s->{sep} . $s->{pad}, @post) 
-      . ';' . $s->{sep} if @post;
+    my $out = $s->_compose_out($valstr, \@post);
 
     push @out, $out;
   }
@@ -777,6 +756,45 @@ sub qquote {
 # helper sub to sort hash keys in Perl < 5.8.0 where we don't have
 # access to sortsv() from XS
 sub _sortkeys { [ sort keys %{$_[0]} ] }
+
+sub _refine_name {
+    my $s = shift;
+    my ($name, $val, $i) = @_;
+    if (defined $name) {
+      if ($name =~ /^[*](.*)$/) {
+        if (defined $val) {
+            $name = (ref $val eq 'ARRAY') ? ( "\@" . $1 ) :
+              (ref $val eq 'HASH')  ? ( "\%" . $1 ) :
+              (ref $val eq 'CODE')  ? ( "\*" . $1 ) :
+              ( "\$" . $1 ) ;
+        }
+        else {
+          $name = "\$" . $1;
+        }
+      }
+      elsif ($name !~ /^\$/) {
+        $name = "\$" . $name;
+      }
+    }
+    else { # no names provided
+      $name = "\$" . $s->{varname} . $i;
+    }
+    return $name;
+}
+
+sub _compose_out {
+    my $s = shift;
+    my ($valstr, $postref) = @_;
+    my $out = "";
+    $out .= $s->{pad} . $valstr . $s->{sep};
+    if (@{$postref}) {
+        $out .= $s->{pad} .
+            join(';' . $s->{sep} . $s->{pad}, @{$postref}) .
+            ';' .
+            $s->{sep};
+    }
+    return $out;
+}
 
 1;
 __END__
