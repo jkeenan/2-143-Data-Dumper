@@ -70,17 +70,16 @@ my %d = (
     local $Data::Dumper::Quotekeys = $quotekeys;
     $obj = Data::Dumper->new( [ \%d ] );
     $dumps{'ddqkundef'} = _dumptostr($obj);
-print STDERR $dumps{'ddqkundef'};
     local $Data::Dumper::Quotekeys = $starting;
 
     $obj = Data::Dumper->new( [ \%d ] );
     $obj->Quotekeys($quotekeys);
     $dumps{'objqkundef'} = _dumptostr($obj);
-print STDERR $dumps{'objkundef'};
 
-    is($dumps{'ddqkundef'}, $dumps{'objqkundef'},
+    note("Quotekeys(undef) will fall back to the default value\nfor \$Data::Dumper::Quotekeys, which is a true value.");
+    isnt($dumps{'ddqkundef'}, $dumps{'objqkundef'},
         "\$Data::Dumper::Quotekeys = undef and Quotekeys(undef) are equivalent");
-    is($dumps{'ddqkzero'}, $dumps{'objqkundef'},
+    isnt($dumps{'ddqkzero'}, $dumps{'objqkundef'},
         "\$Data::Dumper::Quotekeys = undef and = 0 are equivalent");
     %dumps = ();
 
@@ -130,11 +129,11 @@ print STDERR $dumps{'objkundef'};
     $obj->Quotekeys($quotekeys);
     $dumps{'objqkundef'} = _dumptostr($obj);
 
-    is($dumps{'ddqkundef'}, $dumps{'objqkundef'},
+    note("Quotekeys(undef) will fall back to the default value\nfor \$Data::Dumper::Quotekeys, which is a true value.");
+    isnt($dumps{'ddqkundef'}, $dumps{'objqkundef'},
         "\$Data::Dumper::Quotekeys = undef and Quotekeys(undef) are equivalent");
-    is($dumps{'ddqkzero'}, $dumps{'objqkundef'},
+    isnt($dumps{'ddqkzero'}, $dumps{'objqkundef'},
         "\$Data::Dumper::Quotekeys = undef and = 0 are equivalent");
     %dumps = ();
-
 }
 

@@ -1070,7 +1070,7 @@ Cross-referencing will then only be done when absolutely essential
 $Data::Dumper::Quotekeys  I<or>  $I<OBJ>->Quotekeys(I<[NEWVAL]>)
 
 Can be set to a boolean value to control whether hash keys are quoted.
-A false value will avoid quoting hash keys when it looks like a simple
+A defined false value will avoid quoting hash keys when it looks like a simple
 string.  Default is 1, which will always enclose hash keys in quotes.
 
 =item *
