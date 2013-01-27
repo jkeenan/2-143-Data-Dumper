@@ -483,7 +483,7 @@ sub _dump {
       }
     }
     else {
-      croak "Can't handle $realtype type.";
+      croak "Can't handle '$realtype' type";
     }
     
     if ($realpack and !$no_bless) { # we have a blessed ref

@@ -15,7 +15,7 @@ use strict;
 use Carp;
 use Data::Dumper;
 $Data::Dumper::Indent=1;
-use Test::More tests => 21;
+use Test::More tests => 22;
 use lib qw( ./t/lib );
 use Testing qw( _dumptostr );
 my ($a, $b, $obj);
@@ -26,6 +26,7 @@ $a = 'alpha';
 $b = 'beta';
 my @c = ( qw| eta theta | );
 my %d = ( iota => 'kappa' );
+my $realtype;
 
 local $Data::Dumper::Useperl=1;
 
@@ -211,3 +212,13 @@ local $Data::Dumper::Deparse=0;
     is($dumps{'dduundef'}, $dumps{'useperlundef'},
         "\$Data::Dumper::Useperl(undef) and Useperl(undef) are equivalent");
 }
+
+{
+    $obj = Data::Dumper->new([ {IO => *{$::{STDERR}}{IO}} ]);
+    $obj->Useperl(1);
+    eval { $dumpstr = _dumptostr($obj); };
+    $realtype = 'IO';
+    like($@, qr/Can't handle '$realtype' type/,
+        "Got expected error: pure-perl: Data-Dumper does not handle $realtype");
+}
+
